@@ -106,15 +106,20 @@ class TrayIcon:
 
         self.tray = QSystemTrayIcon()
         self.tray.activated.connect(self.action)
-        self.tray.setIcon(self.icons[locked])
+        self.update_status()
         self.tray.show()
 
-    def action(self, signal):
+    def toggle_lock(self):
         global locked
         locked = not locked
 
-        # Change icon accordingly
-        self.tray.setIcon(locked)
+    def update_status(self):
+        self.tray.setToolTip("Auto rotate ({})".format('enabled' if not locked else 'disabled'))
+        self.tray.setIcon(self.icons[locked])
+
+    def action(self, signal):
+        self.toggle_lock()
+        self.update_status()
 
 #
 # Workers
@@ -178,6 +183,7 @@ monitor_name = 'DSI1'
 # Run the app
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setApplicationName("Automatic screen rotation")
 
     tray = TrayIcon()
 
